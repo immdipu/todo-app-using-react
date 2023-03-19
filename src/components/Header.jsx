@@ -31,6 +31,27 @@ const Header = () => {
     }
   };
 
+  const deleteTask = async (id) => {
+    try {
+      const res = await fetch(
+        `https://task-manager-api-we7s.onrender.com/api/v1/tasks/${id}`,
+        {
+          method: "DELETE",
+          headers: {
+            "Content-type": "application/json",
+          },
+        }
+      );
+      const result = await res.json();
+      if (result.status === "success") {
+        let newTask = tasks.filter((el) => el._id !== id);
+        setTasks(newTask);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   if (loading) {
     return <div>Loading...</div>;
   }
@@ -44,11 +65,13 @@ const Header = () => {
           </h1>
           <img src={sun} className="w-fit h-fit" alt="sun" />
         </div>
-        <NotesInput />
+        <NotesInput setTasks={setTasks} />
         <div className="mt-10">
           <div className="flex flex-col gap-2">
             {tasks.map((value, index) => {
-              return <Todolist key={index} {...value} />;
+              return (
+                <Todolist key={index} {...value} deleteTask={deleteTask} />
+              );
             })}
           </div>
         </div>

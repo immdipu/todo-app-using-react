@@ -1,6 +1,6 @@
 import React, { useRef } from "react";
 
-const NotesInput = () => {
+const NotesInput = ({ setTasks }) => {
   const checkBox = useRef(null);
   const InputText = useRef(null);
 
@@ -17,14 +17,17 @@ const NotesInput = () => {
         }
       );
       const responseTask = await response.json();
-      console.log(responseTask);
+      setTasks((prev) => {
+        let newdata = responseTask.data.tasks;
+        return [...prev, newdata];
+      });
     } catch (error) {
       console.log(error);
     }
   };
 
   const submitHandler = (e) => {
-    // e.preventDefault();
+    e.preventDefault();
     let data = {
       title: InputText.current.value,
       completed: checkBox.current.checked,
