@@ -10,33 +10,32 @@ const Header = () => {
   const mystyle = {
     backgroundImage: `url("${bgDesktopDark}")`,
   };
-  const [todo, setTodo] = useState([]);
-  const [filterTodo, setfilterTodo] = useState(todo);
+  const [tasks, setTasks] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [view, setView] = useState("All");
 
   useEffect(() => {
-    if (view == "Active") {
-      setfilterTodo(todo.filter((todo) => todo.checkBox == false));
+    getAllTasks();
+  }, []);
+
+  const getAllTasks = async () => {
+    setLoading(true);
+    try {
+      const res = await fetch(
+        "https://task-manager-api-we7s.onrender.com/api/v1/tasks"
+      );
+      let data = await res.json();
+      setTasks(data.data.tasks);
+      setLoading(false);
+    } catch (error) {
+      console.log(error);
+      setLoading(false);
     }
-    if (view == "Completed") {
-      setfilterTodo(todo.filter((todo) => todo.checkBox == true));
-    }
-  }, [view, todo]);
+  };
 
-  function updateTaskDone(todoIndex, newCheckBox) {
-    setTodo((prev) => {
-      let newTodo = [...prev];
-      newTodo[todoIndex].checkBox = newCheckBox;
-      return newTodo;
-    });
+  if (loading) {
+    return <div>Loading...</div>;
   }
-
-  function removeitem(i) {
-    const newtodo = todo.filter((value, inex) => inex !== i);
-    setTodo(newtodo);
-  }
-
-  const numberofleftTodo = todo.filter((item) => item.checkBox == false).length;
 
   return (
     <div style={mystyle} className="h-[20rem] bg-no-repeat flex">
@@ -47,42 +46,15 @@ const Header = () => {
           </h1>
           <img src={sun} className="w-fit h-fit" alt="sun" />
         </div>
-        <NotesInput todo={todo} setTodo={setTodo} />
+        <NotesInput />
         <div className="mt-10">
-          <div>
-            {view === "All" ? (
-              <>
-                {todo.map((value, index) => {
-                  return (
-                    <Todolist
-                      key={index}
-                      props={value}
-                      onToggle={(checkBox) => updateTaskDone(index, checkBox)}
-                      index={index}
-                      removeTodo={removeitem}
-                    />
-                  );
-                })}
-              </>
-            ) : (
-              <>
-                {" "}
-                {filterTodo.map((value, index) => {
-                  return (
-                    <Todolist
-                      key={index}
-                      props={value}
-                      onToggle={(checkBox) => updateTaskDone(index, checkBox)}
-                      index={index}
-                      removeTodo={removeitem}
-                    />
-                  );
-                })}
-              </>
-            )}
+          <div className="flex flex-col gap-2">
+            {tasks.map((value, index) => {
+              return <Todolist key={index} {...value} />;
+            })}
           </div>
         </div>
-        <TodoFooter items={numberofleftTodo} setView={setView} />
+        {/* <TodoFooter items={numberofleftTodo} setView={setView} /> */}
       </div>
     </div>
   );

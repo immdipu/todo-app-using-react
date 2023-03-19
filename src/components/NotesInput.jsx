@@ -1,19 +1,35 @@
 import React, { useRef } from "react";
 
-const NotesInput = ({ todo, setTodo }) => {
+const NotesInput = () => {
   const checkBox = useRef(null);
   const InputText = useRef(null);
 
-  const submitHandler = (e) => {
-    e.preventDefault();
-    setTodo([
-      ...todo,
-      {
-        InputText: InputText.current.value,
-        checkBox: checkBox.current.checked,
-      },
-    ]);
+  const createData = async (data) => {
+    try {
+      const response = await fetch(
+        "https://task-manager-api-we7s.onrender.com/api/v1/tasks",
+        {
+          method: "POST",
+          body: JSON.stringify(data),
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      const responseTask = await response.json();
+      console.log(responseTask);
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
+  const submitHandler = (e) => {
+    // e.preventDefault();
+    let data = {
+      title: InputText.current.value,
+      completed: checkBox.current.checked,
+    };
+    createData(data);
     InputText.current.value = "";
     checkBox.current.checked = false;
   };
@@ -34,6 +50,7 @@ const NotesInput = ({ todo, setTodo }) => {
         className="w-full h-full outline-none"
         ref={InputText}
         onSubmit={submitHandler}
+        required
       />
     </form>
   );
