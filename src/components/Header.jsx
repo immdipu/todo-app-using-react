@@ -3,7 +3,6 @@ import sun from "../assets/icon-sun.svg";
 import bgDesktopDark from "../assets/bgDesktopDark.jpg";
 import NotesInput from "./NotesInput";
 import Todolist from "./Todolist";
-import TodoFooter from "./TodoFooter";
 import { useState, useEffect } from "react";
 
 const Header = () => {
@@ -12,7 +11,6 @@ const Header = () => {
   };
   const [tasks, setTasks] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [view, setView] = useState("All");
 
   useEffect(() => {
     getAllTasks();
